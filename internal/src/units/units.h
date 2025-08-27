@@ -5,6 +5,7 @@
 #include "./units_math.h"
 // #include "./units_str.h"
 #include "./units_stage.h"
+#include "./units_inputs.h"
 
 /* ### \- Global application initialization:
 	Used for anything the entire applicaiton will

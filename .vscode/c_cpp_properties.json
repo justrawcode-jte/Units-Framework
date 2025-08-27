@@ -4,6 +4,7 @@
             "name": "Mac",
             "includePath": [
 				"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/**",
+				"${workspaceFolder}/internal/deps/sdl3/include",
 				"${workspaceFolder}/internal/src",
                 "${workspaceFolder}/src/**"
             ],
