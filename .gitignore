@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+# Dependencies
+internal/deps
+internal/build
+internal/install
