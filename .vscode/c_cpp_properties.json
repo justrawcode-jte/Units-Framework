@@ -5,6 +5,7 @@
             "includePath": [
 				"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/**",
 				"${workspaceFolder}/internal/deps/sdl3/include",
+				"${workspaceFolder}/internal/deps/imgui/include",
 				"${workspaceFolder}/internal/src",
                 "${workspaceFolder}/src/**"
             ],

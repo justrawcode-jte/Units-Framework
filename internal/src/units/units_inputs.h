@@ -3,6 +3,7 @@
 #include "./units_macros.h"
 #include "./units_types.h"
 #include "./units_bit.h"
+#include "./units_app.h"
 
 
 namespace Units {
@@ -59,9 +60,11 @@ namespace Units {
 		friend const bool InputsManager::GetInputState( const Input_t& input ) noexcept;
 		friend const bool InputsManager::GetInputUp   ( const Input_t& input ) noexcept;
 		friend const bool InputsManager::GetInputDown ( const Input_t& input ) noexcept;
+
+		friend void App::PollEvents();
 	private:
-		Input_t( const void* const _registered_vector_ptr, const uint16_t& _input_id ) noexcept : registered_vector_ptr( _registered_vector_ptr ), input_id( _input_id ) {}
-		const void* const registered_vector_ptr;
+		Input_t( const void* _registered_vector_ptr, const uint16_t& _input_id ) noexcept : registered_vector_ptr( _registered_vector_ptr ), input_id( _input_id ) {}
+		const void* registered_vector_ptr;
 		const uint16_t input_id;
 	};
 } // namespace Units

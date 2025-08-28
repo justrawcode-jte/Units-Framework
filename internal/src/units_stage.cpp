@@ -12,7 +12,7 @@ struct StageData {
 
 
 void Units::StageManager::LoadNextStage( Stage_t* stage_ptr ) noexcept {
-	if( StageData.is_new_stage = ( stage_ptr != StageData.current_stage_ptr ) ) {
+	if( ( StageData.is_new_stage = stage_ptr != StageData.current_stage_ptr ) ) {
 		if( stage_ptr != StageData.next_stage_ptr && StageData.next_stage_ptr != nullptr )
 			delete StageData.next_stage_ptr;
 		StageData.next_stage_ptr = stage_ptr;
@@ -51,7 +51,7 @@ void Units::StageManager::ClearNextStage() noexcept {
 
 void Units::StageManager::LoadNextSubStage( SubStage_t* substage_ptr ) noexcept {
 	StageData.is_current_paused = true;
-	if( StageData.is_new_substage = ( substage_ptr != StageData.current_substage_ptr ) ) {
+	if( ( StageData.is_new_substage = substage_ptr != StageData.current_substage_ptr ) ) {
 		if( substage_ptr != StageData.next_substage_ptr && StageData.next_substage_ptr != nullptr )
 			delete StageData.next_substage_ptr;
 		StageData.next_substage_ptr = substage_ptr;

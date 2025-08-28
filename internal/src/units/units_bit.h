@@ -29,8 +29,8 @@ namespace Units {
 			return bits;
 		}
 
-		UNITS_NODISCARD constexpr BitSet operator~() noexcept {
-			return BitSet{~bits};
+		UNITS_NODISCARD constexpr Bitset operator~() noexcept {
+			return Bitset{~bits};
 		}
 	};
 
@@ -119,7 +119,7 @@ namespace Units {
 
 	template<typename Type_t>
 	UNITS_NODISCARD constexpr Type_t roundBaseTwoFact( const Type_t& num ) noexcept {
-		Type val = 0u;
+		Type_t val = 0u;
 		for( Type_t i = roundLogTwo<Type_t>( num ); i != std::numeric_limits<Type_t>::max; i-- )
 			val += makeSingleBit<Type_t>( i );
 		return val;
@@ -127,7 +127,7 @@ namespace Units {
 
 	template<typename Type_t>
 	UNITS_NODISCARD constexpr Type_t floorBaseTwoFact( const Type_t& num ) noexcept {
-		Type val = 0u;
+		Type_t val = 0u;
 		for( Type_t i = floorLogTwo<Type_t>( num ); i != std::numeric_limits<Type_t>::max; i-- )
 			val += makeSingleBit<Type_t>( i );
 		return val;
@@ -135,7 +135,7 @@ namespace Units {
 
 	template<typename Type_t>
 	UNITS_NODISCARD constexpr Type_t ceilBaseTwoFact( const Type_t& num ) noexcept {
-		Type val = 0u;
+		Type_t val = 0u;
 		for( Type_t i = ceilLogTwo<Type_t>( num ); i != std::numeric_limits<Type_t>::max; i-- )
 			val += makeSingleBit<Type_t>( i );
 		return val;
@@ -153,7 +153,7 @@ namespace Units {
 			return msb;
 		if( msb & 1u )
 			return msb + 1u;
-		if( BitSet<Type_t>{num}[msb - 1u] )
+		if( Bitset<Type_t>{num}[msb - 1u] )
 			return msb + 2u;
 		return msb;
 	}

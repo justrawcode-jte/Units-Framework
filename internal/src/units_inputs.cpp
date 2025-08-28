@@ -1,5 +1,7 @@
+#include <imgui/imgui_impl_sdl3.h>
 #include <vector>
-#include "units/units_inputs_new.h"
+#include "units/units_inputs.h"
+#include "units/units_app.h"
 
 
 struct InputsData {
@@ -56,7 +58,7 @@ void Units::InputsManager::ClearSubStageInputs() noexcept {
 UNITS_NODISCARD Units::Input_t Units::InputsManager::RegisterGlobalInput  ( const SDL_Scancode& scancode ) noexcept {
 	Input_t input{
 		static_cast<void*>( &InputsData.  global_inputs ),
-		InputsData.  global_inputs.size()
+		(uint16_t)InputsData.  global_inputs.size()
 	};
 	InputsData.  global_inputs.emplace_back( InputsData::Input_t{
 		.scancode = scancode,
@@ -67,7 +69,7 @@ UNITS_NODISCARD Units::Input_t Units::InputsManager::RegisterGlobalInput  ( cons
 UNITS_NODISCARD Units::Input_t Units::InputsManager::RegisterStageInput   ( const SDL_Scancode& scancode ) noexcept {
 	Input_t input{
 		static_cast<void*>( &InputsData.   stage_inputs ),
-		InputsData.   stage_inputs.size()
+		(uint16_t)InputsData.   stage_inputs.size()
 	};
 	InputsData.   stage_inputs.emplace_back( InputsData::Input_t{
 		.scancode = scancode,
@@ -78,7 +80,7 @@ UNITS_NODISCARD Units::Input_t Units::InputsManager::RegisterStageInput   ( cons
 UNITS_NODISCARD Units::Input_t Units::InputsManager::RegisterSubStageInput( const SDL_Scancode& scancode ) noexcept {
 	Input_t input{
 		static_cast<void*>( &InputsData.substage_inputs ),
-		InputsData.substage_inputs.size()
+		(uint16_t)InputsData.substage_inputs.size()
 	};
 	InputsData.substage_inputs.emplace_back( InputsData::Input_t{
 		.scancode = scancode,
@@ -88,16 +90,51 @@ UNITS_NODISCARD Units::Input_t Units::InputsManager::RegisterSubStageInput( cons
 }
 
 UNITS_NODISCARD const bool Units::InputsManager::GetInputState( const Input_t& input ) noexcept {
-	const std::vector<InputsData::Input_t>& registered_vector{ *static_cast<const std::vector<InputsData::Input_t>* const>( input.registered_vector_ptr ) };
+	const std::vector<InputsData::Input_t>& registered_vector{ *static_cast<const std::vector<InputsData::Input_t>*>( input.registered_vector_ptr ) };
 	return registered_vector[input.input_id].bitset.get( InputsData::InputBit_STATE );
 }
 UNITS_NODISCARD const bool Units::InputsManager::GetInputUp   ( const Input_t& input ) noexcept {
-	const std::vector<InputsData::Input_t>& registered_vector{ *static_cast<const std::vector<InputsData::Input_t>* const>( input.registered_vector_ptr ) };
+	const std::vector<InputsData::Input_t>& registered_vector{ *static_cast<const std::vector<InputsData::Input_t>*>( input.registered_vector_ptr ) };
 	return registered_vector[input.input_id].bitset.get( InputsData::InputBit_UP    );
 }
 UNITS_NODISCARD const bool Units::InputsManager::GetInputDown ( const Input_t& input ) noexcept {
-	const std::vector<InputsData::Input_t>& registered_vector{ *static_cast<const std::vector<InputsData::Input_t>* const>( input.registered_vector_ptr ) };
+	const std::vector<InputsData::Input_t>& registered_vector{ *static_cast<const std::vector<InputsData::Input_t>*>( input.registered_vector_ptr ) };
 	return registered_vector[input.input_id].bitset.get( InputsData::InputBit_DOWN  );
+}
+
+void Units::App::PollEvents() {
+	while( SDL_PollEvent( &InputsData.event ) ) {
+		ImGui_ImplSDL3_ProcessEvent( &InputsData.event );
+		if( InputsData.event.type == SDL_EVENT_QUIT ) {
+			Units::App::Exit();
+			break;
+		}
+		
+		if( InputsData.event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED )
+			DestroyWindowByID( InputsData.event.window.windowID );
+
+		for( InputsData::Input_t& input : InputsData.  global_inputs )
+			if( InputsData.event.key.scancode == input.scancode ) {
+				if( InputsData.event.type == SDL_EVENT_KEY_UP   )
+					input.bitset.set( InputsData::InputBit_RAW, false );
+				if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
+					input.bitset.set( InputsData::InputBit_RAW, true  );
+			}
+		for( InputsData::Input_t& input : InputsData.   stage_inputs )
+			if( InputsData.event.key.scancode == input.scancode ) {
+				if( InputsData.event.type == SDL_EVENT_KEY_UP   )
+					input.bitset.set( InputsData::InputBit_RAW, false );
+				if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
+					input.bitset.set( InputsData::InputBit_RAW, true  );
+			}
+		for( InputsData::Input_t& input : InputsData.substage_inputs )
+			if( InputsData.event.key.scancode == input.scancode ) {
+				if( InputsData.event.type == SDL_EVENT_KEY_UP   )
+					input.bitset.set( InputsData::InputBit_RAW, false );
+				if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
+					input.bitset.set( InputsData::InputBit_RAW, true  );
+			}
+	}
 }
 
 void SetInput( InputsData::Input_t& input ) {
