@@ -4,6 +4,7 @@
 #include "./units_macros.h"
 #include "./units_types.h"
 #include "./units_math.h"
+#include "./units_list.h"
 // #include "./units_str.h"
 #include "./units_stage.h"
 #include "./units_inputs.h"

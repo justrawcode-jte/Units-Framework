@@ -109,9 +109,9 @@ void Units::App::PollEvents() {
 			Units::App::Exit();
 			break;
 		}
-		
+
 		if( InputsData.event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED )
-			DestroyWindowByID( InputsData.event.window.windowID );
+			Window::DestroyWindowByID( InputsData.event.window.windowID );
 
 		for( InputsData::Input_t& input : InputsData.  global_inputs )
 			if( InputsData.event.key.scancode == input.scancode ) {

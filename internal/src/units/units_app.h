@@ -4,9 +4,6 @@
 
 namespace Units {
 	namespace App {
-		/* Returns the main Window_t */
-		UNITS_NODISCARD extern Window_t* GetMainWindowPtr() noexcept;
-
 		/* Inits the applicaitons core */
 		extern void Init();
 		/* Runs the application */

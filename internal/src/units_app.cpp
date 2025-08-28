@@ -5,8 +5,6 @@
 #include "units/units.h"
 
 struct AppData {
-	Units::Window_t* main_window_ptr{ nullptr };
-
 	bool is_running{ false };
 
 	struct Time {
@@ -19,9 +17,6 @@ struct AppData {
 	} Time{};
 } static AppData{};
 
-UNITS_NODISCARD Units::Window_t* Units::App::GetMainWindowPtr() noexcept {
-	return AppData.main_window_ptr;
-}
 
 #if   defined(UNITS_IMGUI_IMPLSDL_GPU3)
 #	include <imgui/imgui_impl_sdlgpu3.h>
@@ -33,12 +28,7 @@ UNITS_NODISCARD Units::Window_t* Units::App::GetMainWindowPtr() noexcept {
 void Units::App::Init() {
 	SDL_Init( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
 
-	AppData.main_window_ptr = CreateWindow( WindowCreateInfo_t{
-		.title = ( (std::string)"MASTER " + APP_VERSION_STRING ).c_str(),
-		.window_flags = SDL_WINDOW_RESIZABLE,
-		.width = 1280u,
-		.height = 720u,
-	} );
+	Window::Init();
 
 	InputsManager::Init();
 
@@ -60,7 +50,7 @@ void Units::App::Init() {
 	ImGui_ImplSDL3_InitForSDLRenderer( GetSDLWindowPtr( AppData.main_window_ptr ), RendererData.renderer_ptr );
 	ImGui_ImplSDLRenderer3_Init( RendererData.renderer_ptr );
 #elif defined(UNITS_IMGUI_IMPLSDL3_OTHER)
-	ImGui_ImplSDL3_InitForOther( GetSDLWindowPtr( AppData.main_window_ptr ) );
+	ImGui_ImplSDL3_InitForOther( Window::GetSDLWindowPtr( Window::GetMainWindowPtr() ) );
 #endif
 }
 
@@ -69,7 +59,7 @@ void Units::App::Exit() noexcept {
 		AppData.is_running = false;
 		return;
 	}
-	DestroyAllWindows();
+	Window::Exit();
 }
 
 void BeginTick() {
