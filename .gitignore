@@ -35,3 +35,7 @@
 internal/deps
 internal/build
 internal/install
+
+# Config outputs
+src/config.h
+internal/src/units/units_config.h
