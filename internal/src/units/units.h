@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./units_config.h"
 #include "./units_macros.h"
 #include "./units_types.h"
 #include "./units_math.h"

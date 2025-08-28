@@ -1,8 +1,12 @@
 #include "units/units.h"
+#define UNITS_ENTRY_POINT
+#include "units/units_entry.h"
 
-int main( int argc, char** argv );
-int WinMain( int argc, char** argv ) { return main( argc, argv ); }
-int main( int argc, char** argv ) {
-	Units::Debug::Log( "Hello World!" );
-	return 0;
+struct MainStage : Units::Stage_t {
+} static MainStage{};
+
+void Init() {
+	Units::StageManager::LoadNextStage( &MainStage );
+}
+void Exit() {
 }

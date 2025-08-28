@@ -26,7 +26,7 @@ namespace Units {
 	extern void DestroyWindow( Window_t* window_ptr );
 	
 	/* Gets SDL's opaque pointer for Window_t equivalent */
-	UNITS_NODISCARD extern SDL_Window* GetWindowPtr( const Window_t* window_ptr );
+	UNITS_NODISCARD extern SDL_Window* GetSDLWindowPtr( const Window_t* window_ptr );
 	/* Destroys all created Window_t's */
 	extern void DestroyAllWindows();
 	/* Destroys a Window_t by its WindowID_t */

@@ -1,4 +1,5 @@
 #include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl3.h>
 #include <string>
 #include "units/units_config.h"
 #include "units/units.h"
@@ -22,6 +23,13 @@ UNITS_NODISCARD Units::Window_t* Units::App::GetMainWindowPtr() noexcept {
 	return AppData.main_window_ptr;
 }
 
+#if   defined(UNITS_IMGUI_IMPLSDL_GPU3)
+#	include <imgui/imgui_impl_sdlgpu3.h>
+#	include <imgui/imgui_impl_sdlgpu3_shaders.h>
+#elif defined(UNITS_IMGUI_IMPLSDL_RENDERER3)
+#	include <imgui/imgui_impl_sdlrenderer3.h>
+#endif
+
 void Units::App::Init() {
 	SDL_Init( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
 
@@ -40,6 +48,20 @@ void Units::App::Init() {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     ImGui::StyleColorsDark();
+
+#if   defined(UNITS_IMGUI_IMPLSDL_GPU3)
+	ImGui_ImplSDL3_InitForSDLGPU( GetSDLWindowPtr( AppData.main_window_ptr ) );
+	ImGui_ImplSDLGPU3_InitInfo init_info{};
+	init_info.Device = GPUData.device.device_ptr;
+	init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat( GPUData.device.device_ptr, Core::GetWindowPtr( GPUData.window_ptr ) );
+	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
+	ImGui_ImplSDLGPU3_Init( &init_info );
+#elif defined(UNITS_IMGUI_IMPLSDL_RENDERER3)
+	ImGui_ImplSDL3_InitForSDLRenderer( GetSDLWindowPtr( AppData.main_window_ptr ), RendererData.renderer_ptr );
+	ImGui_ImplSDLRenderer3_Init( RendererData.renderer_ptr );
+#elif defined(UNITS_IMGUI_IMPLSDL3_OTHER)
+	ImGui_ImplSDL3_InitForOther( GetSDLWindowPtr( AppData.main_window_ptr ) );
+#endif
 }
 
 void Units::App::Exit() noexcept {

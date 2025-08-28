@@ -22,7 +22,7 @@ void Units::DestroyWindow( Window_t* window_ptr ) {
 	window_data.window_ptr = nullptr;
 }
 
-UNITS_NODISCARD SDL_Window* Units::GetWindowPtr( const Units::Window_t* window_ptr ) {
+UNITS_NODISCARD SDL_Window* Units::GetSDLWindowPtr( const Units::Window_t* window_ptr ) {
 	if( window_ptr == nullptr )
 		return nullptr;
 	return static_cast<const WindowData::Window_t*>( window_ptr )->window_ptr;
