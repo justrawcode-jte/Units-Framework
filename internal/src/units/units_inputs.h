@@ -62,9 +62,11 @@ namespace Units {
 		friend const bool InputsManager::GetInputDown ( const Input_t& input ) noexcept;
 
 		friend void App::PollEvents();
+	public:
+		Input_t() noexcept {}
 	private:
 		Input_t( const void* _registered_vector_ptr, const uint16_t& _input_id ) noexcept : registered_vector_ptr( _registered_vector_ptr ), input_id( _input_id ) {}
-		const void* registered_vector_ptr;
-		const uint16_t input_id;
+		const void* registered_vector_ptr{ nullptr };
+		uint16_t input_id{ null16_v };
 	};
 } // namespace Units

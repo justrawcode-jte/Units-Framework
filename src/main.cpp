@@ -10,6 +10,9 @@ struct MainStage : Units::Stage_t {
 public:
 	friend void destroy_window() noexcept;
 public:
+	void EnableInputs() override {
+		pause_input = Units::InputsManager::RegisterStageInput( SDL_SCANCODE_ESCAPE );
+	}
 	void Enter() override {
 		window_ptr = Units::Window::CreateWindow( Units::WindowCreateInfo_t{
 			.title = "New Window",
