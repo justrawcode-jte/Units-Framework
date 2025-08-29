@@ -90,6 +90,7 @@ void Units::App::Run() {
 
 		current_stage_ptr->EnableInputs();
 		current_stage_ptr->Enter();
+		InputsManager::EnableStageInputs();
 
 		while( AppData.is_running ) {
 			BeginTick();
@@ -121,6 +122,7 @@ void Units::App::Run() {
 
 					current_substage_ptr->EnableInputs();
 					current_substage_ptr->Enter();
+					InputsManager::EnableSubStageInputs();
 
 					while( AppData.is_running && StageManager::CurrentPaused() ) {
 						BeginTick();

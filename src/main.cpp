@@ -29,6 +29,12 @@ public:
 			.scale_mode = SDL_SCALEMODE_PIXELART,
 		} );
 	}
+	void UITick() override {
+		if( Units::InputsManager::GetInputUp( pause_input ) ) {
+			Units::Debug::Log( "Paused" );
+			Units::StageManager::LoadNextSubStage( &substage );
+		}
+	}
 	void RenderPass() override {
 		SDL_SetRenderDrawColor( Units::Renderer::GetMainRendererPtr(), 0u, 0u, 0u, 255u );
 		SDL_RenderClear( Units::Renderer::GetMainRendererPtr() );
@@ -43,6 +49,9 @@ public:
 			SDL_RenderPresent( renderer_ptr );
 		}
 	}
+	void Unpause() override {
+		Units::Debug::Log( "Renter MainStage" );
+	}
 	void Exit() override {
 	}
 private:
@@ -51,7 +60,41 @@ private:
 	SDL_Renderer* renderer_ptr{ nullptr };
 
 	struct SubStage : Units::SubStage_t {
-	} substage{};
+		SubStage( MainStage* _main_stage ): main_stage( _main_stage ) {}
+		void Enter() override{
+			Units::Debug::Log( "Entered SubStage_t: %u", pause_count );
+			pause_count += 1u;
+		}
+		void EnableInputs() override {
+			unpause_input = Units::InputsManager::RegisterSubStageInput( SDL_SCANCODE_P );
+		}
+		void UITick() override {
+			if( Units::InputsManager::GetInputUp( unpause_input ) ) {
+				Units::Debug::Log( "Unpause" );
+				Units::StageManager::EndSubStage();
+			}
+		}
+		void RenderPass() override {
+			SDL_SetRenderDrawColor( Units::Renderer::GetMainRendererPtr(), 0u, 0u, 0u, 255u );
+			SDL_RenderClear( Units::Renderer::GetMainRendererPtr() );
+			Units::Renderer::ClearSubStageTexture( Units::Renderer::GetMainRendererPtr(), SDL_Color{ .r = 0u, .g = 0u, .b = 0u, .a = 50u } );
+			Units::Renderer::RenderStageTexture( Units::Renderer::GetMainRendererPtr() );
+			Units::Renderer::RenderSubStageTexture( Units::Renderer::GetMainRendererPtr() );
+			SDL_RenderPresent( Units::Renderer::GetMainRendererPtr() );
+			if( main_stage->renderer_ptr != nullptr ) {
+				SDL_SetRenderDrawColor( main_stage->renderer_ptr, 0u, 0u, 0u, 255u );
+				SDL_RenderClear( main_stage->renderer_ptr );
+				Units::Renderer::ClearSubStageTexture( main_stage->renderer_ptr, SDL_Color{ .r = 0u, .g = 0u, .b = 0u, .a = 50u } );
+				Units::Renderer::RenderStageTexture( main_stage->renderer_ptr );
+				Units::Renderer::RenderSubStageTexture( main_stage->renderer_ptr );
+				SDL_RenderPresent( main_stage->renderer_ptr );
+			}
+		}
+	private:
+		MainStage* main_stage;
+		uint32_t pause_count{ 0u };
+		Units::Input_t unpause_input{};
+	} substage{ this };
 } static MainStage{};
 
 void destroy_window() noexcept {

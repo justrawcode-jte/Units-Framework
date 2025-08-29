@@ -2,6 +2,7 @@
 #include <vector>
 #include "units/units_inputs.h"
 #include "units/units_app.h"
+#include "units/units_debug.h"
 
 
 struct InputsData {
@@ -119,27 +120,31 @@ void Units::App::PollEvents() {
 			}
 		}
 
-		for( InputsData::Input_t& input : InputsData.  global_inputs )
-			if( InputsData.event.key.scancode == input.scancode ) {
-				if( InputsData.event.type == SDL_EVENT_KEY_UP   )
-					input.bitset.set( InputsData::InputBit_RAW, false );
-				if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
-					input.bitset.set( InputsData::InputBit_RAW, true  );
-			}
-		for( InputsData::Input_t& input : InputsData.   stage_inputs )
-			if( InputsData.event.key.scancode == input.scancode ) {
-				if( InputsData.event.type == SDL_EVENT_KEY_UP   )
-					input.bitset.set( InputsData::InputBit_RAW, false );
-				if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
-					input.bitset.set( InputsData::InputBit_RAW, true  );
-			}
-		for( InputsData::Input_t& input : InputsData.substage_inputs )
-			if( InputsData.event.key.scancode == input.scancode ) {
-				if( InputsData.event.type == SDL_EVENT_KEY_UP   )
-					input.bitset.set( InputsData::InputBit_RAW, false );
-				if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
-					input.bitset.set( InputsData::InputBit_RAW, true  );
-			}
+		if( InputsData.event.type == SDL_EVENT_KEY_UP || InputsData.event.type == SDL_EVENT_KEY_DOWN ) {
+			for( InputsData::Input_t& input : InputsData.  global_inputs )
+				if( InputsData.event.key.scancode == input.scancode ) {
+					if( InputsData.event.type == SDL_EVENT_KEY_UP   )
+						input.bitset.set( InputsData::InputBit_RAW, false );
+					if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
+						input.bitset.set( InputsData::InputBit_RAW, true  );
+				}
+			if( InputsData.   stage_inputs_enabled )
+				for( InputsData::Input_t& input : InputsData.   stage_inputs )
+					if( InputsData.event.key.scancode == input.scancode ) {
+						if( InputsData.event.type == SDL_EVENT_KEY_UP   )
+							input.bitset.set( InputsData::InputBit_RAW, false );
+						if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
+							input.bitset.set( InputsData::InputBit_RAW, true  );
+					}
+			if( InputsData.substage_inputs_enabled )
+				for( InputsData::Input_t& input : InputsData.substage_inputs )
+					if( InputsData.event.key.scancode == input.scancode ) {
+						if( InputsData.event.type == SDL_EVENT_KEY_UP   )
+							input.bitset.set( InputsData::InputBit_RAW, false );
+						if( InputsData.event.type == SDL_EVENT_KEY_DOWN )
+							input.bitset.set( InputsData::InputBit_RAW, true  );
+					}
+		}
 	}
 }
 
@@ -148,7 +153,7 @@ void SetInput( InputsData::Input_t& input ) {
 	const bool state{ input.bitset.get( InputsData::InputBit_STATE ) };
 	input.bitset.set( InputsData::InputBit_UP   , !raw &&  state );
 	input.bitset.set( InputsData::InputBit_DOWN ,  raw && !state );
-	input.bitset.set( InputsData::InputBit_STATE, state );
+	input.bitset.set( InputsData::InputBit_STATE,  raw );
 }
 void Units::InputsManager::PollInputs() noexcept {
 	for( InputsData::Input_t& input : InputsData.  global_inputs )
