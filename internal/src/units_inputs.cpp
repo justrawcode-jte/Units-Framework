@@ -110,8 +110,14 @@ void Units::App::PollEvents() {
 			break;
 		}
 
-		if( InputsData.event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED )
-			Window::DestroyWindowByID( InputsData.event.window.windowID );
+		if( InputsData.event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED ) {
+			if( InputsData.event.window.windowID != SDL_GetWindowID( Window::GetMainWindowPtr() ) )
+				Window::DestroyWindow( SDL_GetWindowFromID( InputsData.event.window.windowID ) );
+			else {
+				Units::App::Exit();
+				break;
+			}
+		}
 
 		for( InputsData::Input_t& input : InputsData.  global_inputs )
 			if( InputsData.event.key.scancode == input.scancode ) {

@@ -52,6 +52,7 @@
 		"unordered_map": "cpp",
 		"variant": "cpp",
 		"vector": "cpp",
-		"list": "cpp"
+		"list": "cpp",
+		"*.in": "cpp"
 	}
 }

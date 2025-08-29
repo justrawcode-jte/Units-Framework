@@ -1,6 +1,5 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl3.h>
-#include <string>
 #include "units/units_config.h"
 #include "units/units.h"
 
@@ -23,12 +22,13 @@ struct AppData {
 #	include <imgui/imgui_impl_sdlgpu3_shaders.h>
 #elif defined(UNITS_IMGUI_IMPLSDL_RENDERER3)
 #	include <imgui/imgui_impl_sdlrenderer3.h>
+#	include "units/renderer/renderer.h"
 #endif
 
-void Units::App::Init() {
+void Units::App::Init( const WindowCreateInfo_t& main_window_create_info ) {
 	SDL_Init( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
 
-	Window::Init();
+	Window::Init( main_window_create_info );
 
 	InputsManager::Init();
 
@@ -47,10 +47,11 @@ void Units::App::Init() {
 	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
 	ImGui_ImplSDLGPU3_Init( &init_info );
 #elif defined(UNITS_IMGUI_IMPLSDL_RENDERER3)
-	ImGui_ImplSDL3_InitForSDLRenderer( GetSDLWindowPtr( AppData.main_window_ptr ), RendererData.renderer_ptr );
-	ImGui_ImplSDLRenderer3_Init( RendererData.renderer_ptr );
+	Renderer::Init();
+	ImGui_ImplSDL3_InitForSDLRenderer( Window::GetMainWindowPtr(), Renderer::GetMainRendererPtr() );
+	ImGui_ImplSDLRenderer3_Init( Renderer::GetMainRendererPtr() );
 #elif defined(UNITS_IMGUI_IMPLSDL3_OTHER)
-	ImGui_ImplSDL3_InitForOther( Window::GetSDLWindowPtr( Window::GetMainWindowPtr() ) );
+	ImGui_ImplSDL3_InitForOther( Window::GetMainWindowPtr() );
 #endif
 }
 
@@ -59,6 +60,11 @@ void Units::App::Exit() noexcept {
 		AppData.is_running = false;
 		return;
 	}
+#if   defined(UNITS_IMGUI_IMPLSDL_GPU3)
+#elif defined(UNITS_IMGUI_IMPLSDL_RENDERER3)
+	Renderer::Exit();
+#elif defined(UNITS_IMGUI_IMPLSDL3_OTHER)
+#endif
 	Window::Exit();
 }
 

@@ -5,7 +5,7 @@
 namespace Units {
 	namespace App {
 		/* Inits the applicaitons core */
-		extern void Init();
+		extern void Init( const WindowCreateInfo_t& main_window_create_info );
 		/* Runs the application */
 		extern void Run();
 		/* Polls applicaitons events
