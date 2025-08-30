@@ -5,6 +5,7 @@
 
 struct AppData {
 	bool is_running{ false };
+	bool can_exit{ true };
 
 	struct Time {
 		const uint8_t max_ticks_per_frame{ 100u };
@@ -56,16 +57,21 @@ void Units::App::Init( const WindowCreateInfo_t& main_window_create_info ) {
 }
 
 void Units::App::Exit() noexcept {
-	if( AppData.is_running == true ) {
+	if( AppData.is_running == true || !AppData.can_exit ) {
 		AppData.is_running = false;
 		return;
 	}
 #if   defined(UNITS_IMGUI_IMPLSDL_GPU3)
 #elif defined(UNITS_IMGUI_IMPLSDL_RENDERER3)
+	ImGui_ImplSDLRenderer3_Shutdown();
+	ImGui_ImplSDL3_Shutdown();
+	ImGui::DestroyContext();
 	Renderer::Exit();
 #elif defined(UNITS_IMGUI_IMPLSDL3_OTHER)
-#endif
+	ImGui_ImplSDL3_Shutdown();
+	ImGui::DestroyContext();
 	Window::Exit();
+#endif
 }
 
 void BeginTick() {
@@ -78,6 +84,7 @@ void Units::App::Run() {
 	if( AppData.is_running )
 		return;
 	AppData.is_running = true;
+	AppData.can_exit = false;
 
 	AppData.Time.curr_ms =
 	AppData.Time.prev_ms =
@@ -156,5 +163,6 @@ void Units::App::Run() {
 		current_stage_ptr->Exit();
 	}
 
+	AppData.can_exit = true;
 	return;
 }

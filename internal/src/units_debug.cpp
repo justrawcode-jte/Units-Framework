@@ -1,10 +1,11 @@
 #include <imgui/imgui.h>
 #include <SDL3/SDL.h>
+#include <stdint.h>
 #include "units/units_macros.h"
 #include "units/units_types.h"
 #include "units/units_debug.h"
 
-struct DebugData{
+struct DebugData {
     const char* colors[9u] = {
         "\033[1;32m",
         "\033[1;37m",
@@ -24,7 +25,7 @@ struct DebugData{
     };
 
 	struct ConsoleApp {
-		/* char input_buffer[256u];
+		char input_buffer[256u];
 		ImVector<char*> items;
 		ImVector<const char*> commands;
 		ImVector<char*> history;
@@ -32,8 +33,9 @@ struct DebugData{
 		ImGuiTextFilter filter;
 		bool auto_scroll;
 		bool scroll_to_bottom;
+		DebugData* debug_data_ptr;
 
-		ConsoleApp() {
+		ConsoleApp( DebugData* _debug_data_ptr ): debug_data_ptr( _debug_data_ptr ) {
 			clear_log();
 			memset( input_buffer, 0, sizeof( input_buffer ) );
 			history_i = -1;
@@ -62,12 +64,12 @@ struct DebugData{
 				ImGui::MemFree( items[i] );
 			items.clear();
 		}
-		void add_log( const char *fmt, ... ) VARIADIC_ARGS(2) {
+		void add_log( const char *fmt, ... ) UNITS_VARIADIC_ARGS(2) {
 			char buffer[256u];
 			va_list args;
 			va_start( args, fmt );
-			vsnprintf( buffer, ARRAYSIZE( buffer ), fmt, args );
-			buffer[ARRAYSIZE(buffer) - 1u] = 0;
+			vsnprintf( buffer, UNITS_ARRAYSIZE( buffer ), fmt, args );
+			buffer[UNITS_ARRAYSIZE(buffer) - 1u] = 0;
 			va_end( args );
 			items.push_back( strdup( buffer ) );
 		}
@@ -99,19 +101,19 @@ struct DebugData{
 					
 					ImVec4 color;
 					bool has_color = false;
-						if( strstr( item, Units::Debug::_levels[Units::Debug::DebugLevel_PASSED] ) ) { 
+						if( strstr( item, debug_data_ptr->levels[Units::Debug::DebugLevel_PASSED] ) ) { 
 						color = ImVec4( 0.25f, 1.0f, 0.25f, 1.0f );
 						has_color = true;
 					} else if( strstr( item, "[command]: " ) ) {
 						color = ImVec4( 0.25f, 1.0f, 1.0f, 1.0f );
 						has_color = true;
-					} else if( strstr( item, Units::Debug::_levels[Units::Debug::DebugLevel_NOTE] ) ) {
+					} else if( strstr( item, debug_data_ptr->levels[Units::Debug::DebugLevel_NOTE] ) ) {
 						color = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
 						has_color = true;
-					} else if( strstr( item, Units::Debug::_levels[Units::Debug::DebugLevel_WARNING] ) ) {
+					} else if( strstr( item, debug_data_ptr->levels[Units::Debug::DebugLevel_WARNING] ) ) {
 						color = ImVec4( 1.0f, 0.75f, 0.25f, 1.0f );
 						has_color = true;
-					} else if( strstr( item, Units::Debug::_levels[Units::Debug::DebugLevel_ERROR] ) ) {
+					} else if( strstr( item, debug_data_ptr->levels[Units::Debug::DebugLevel_ERROR] ) ) {
 						color = ImVec4( 1.0f, 0.25f, 0.25f, 1.0f );
 						has_color = true;
 					}
@@ -163,7 +165,7 @@ struct DebugData{
 			if( stricmp( command_line, "clear" ) == 0 ) {
 				clear_log();
 			} else if( stricmp( command_line, "help" ) == 0 ) {
-				add_log( "%sCommands:", Units::Debug::_levels[Units::Debug::DebugLevel_NOTE] );
+				add_log( "%sCommands:", debug_data_ptr->levels[Units::Debug::DebugLevel_NOTE] );
 				for( int i = 0; i < commands.Size; i++ )
 					add_log( "- %s", commands[i] );
 			} else if( stricmp( command_line, "history" ) == 0 ) {
@@ -173,10 +175,10 @@ struct DebugData{
 			} else if( strnicmp( command_line, "note", 4 ) == 0 ) {
 				// only meant to bypass loggin command
 				command_failed = true;
-				add_log( "%s%s", Units::Debug::_levels[Units::Debug::DebugLevel_NOTE], command_line );
+				add_log( "%s%s", debug_data_ptr->levels[Units::Debug::DebugLevel_NOTE], command_line );
 			} else {
 				command_failed = true;
-				add_log( "%sUnknown command: '%s'\n", Units::Debug::_levels[Units::Debug::DebugLevel_WARNING], command_line );
+				add_log( "%sUnknown command: '%s'\n", debug_data_ptr->levels[Units::Debug::DebugLevel_WARNING], command_line );
 			}
 			if( !command_failed )
 				add_log( "[command]: %s\n", command_line );
@@ -252,12 +254,12 @@ struct DebugData{
 				}
 			}
 			return 0;
-		} // */
-	} ConsoleApp{};
+		}
+	} ConsoleApp{ this };
 } static DebugData{};
-/* void Units::Debug::ShowDebugLogConsole( bool *_open_ptr ) {
-	console_app.show( "Debug Console", _open_ptr );
-} // */
+ void Units::Debug::ShowDebugLogConsole( bool *_open_ptr ) {
+	DebugData.ConsoleApp.show( "Debug Console", _open_ptr );
+}
 
 void Units::Debug::Log( const char *str ) {
 	Log( DebugLevel_NOTE, str );
